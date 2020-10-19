@@ -1,5 +1,5 @@
 import com.typesafe.scalalogging._
-import model.User
+import model.{User, UserPk}
 import org.slf4j.LoggerFactory
 import repository.UserRepo
 
@@ -17,7 +17,8 @@ object Main extends App {
     _ <- UserRepo.schemaInit
     usersAdded <- UserRepo.createM(testUsers)
     vovaId <- UserRepo.getByLogin("vova")
-  } yield vovaId
+    usersDeleted <- UserRepo.delete(UserPk(1L))
+  } yield (usersAdded, vovaId, usersDeleted)
 
   println(Await.result(usersTest, 2.seconds))
 }
