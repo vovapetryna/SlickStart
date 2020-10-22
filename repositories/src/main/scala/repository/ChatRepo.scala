@@ -8,16 +8,16 @@ class ChatRepo(db: Database) {
 
   def init = db.run(ChatTable.query.schema.create)
 
-  def create(chatData: Chat) = db.run(ChatTable.idsQuery += chatData)
+  def create(chat: Chat) = db.run(ChatTable.returnQuery += chat)
 
-  def createAll(chatsData: Seq[Chat]) = db.run(ChatTable.idsQuery ++= chatsData)
+  def createAll(chats: Seq[Chat]) = db.run(ChatTable.returnQuery ++= chats)
 
-  def update(chat: Chat) = db.run(ChatTable.query.filter(_.id === chat.id).update(chat))
+  def update(chat: Chat) = db.run(ChatTable.byId(chat.id).update(chat))
 
-  def getById(chatId: Long) =
-    db.run(ChatTable.query.filter(_.id === Chat.Id(chatId)).result)
+  def getById(id: Chat.Id) =
+    db.run(ChatTable.byId(id).result)
 
-  def getAll() = db.run(ChatTable.query.result)
+  def getAll = db.run(ChatTable.query.result)
 
-  def delete(chatId: Long) = db.run(ChatTable.query.filter(_.id === Chat.Id(chatId)).delete)
+  def delete(id: Chat.Id) = db.run(ChatTable.byId(id).delete)
 }

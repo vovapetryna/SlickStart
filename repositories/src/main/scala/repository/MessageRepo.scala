@@ -5,27 +5,26 @@ import table.MessageTable
 import profile.PostgresProfile.api._
 
 class MessageRepo(db: Database) {
-
   def init = db.run(MessageTable.query.schema.create)
 
-  def create(message: Message) = db.run(MessageTable.idsQuery += message)
+  def create(message: Message) = db.run(MessageTable.returnQuery += message)
 
-  def createAll(messagesData: Seq[Message]) = db.run(MessageTable.idsQuery ++= messagesData)
+  def createAll(messages: Seq[Message]) = db.run(MessageTable.returnQuery ++= messages)
 
   def update(message: Message) =
-    db.run(MessageTable.query.filter(_.id === message.id).update(message))
+    db.run(MessageTable.byId(message.id).update(message))
 
-  def getById(messageId: Message.Id) =
-    db.run(MessageTable.query.filter(_.id === messageId).result)
+  def getById(id: Message.Id) =
+    db.run(MessageTable.byId(id).result)
 
   def getAll() = db.run(MessageTable.query.result)
 
-  def delete(messageId: Message.Id) = db.run(MessageTable.query.filter(_.id === messageId).delete)
+  def delete(id: Message.Id) = db.run(MessageTable.byId(id).delete)
 
-  def getMessageWithChatAndSender(messageId: Message.Id) =
+  def getMessageWithChatAndSender(id: Message.Id) =
     db.run {
       (for {
-        message <- MessageTable.query if message.id === messageId
+        message <- MessageTable.byId(id)
         chat <- message.chat
         sender <- message.sender
       } yield (message, chat, sender)).result

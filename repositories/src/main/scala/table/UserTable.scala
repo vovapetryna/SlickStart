@@ -2,8 +2,6 @@ package table
 
 import model.User
 import profile.PostgresProfile.api._
-import slick.dbio.Effect
-import slick.sql.SqlAction
 
 class UserTable(tag: Tag) extends Table[User](tag, "users") {
   def login = column[String]("login")
@@ -13,9 +11,9 @@ class UserTable(tag: Tag) extends Table[User](tag, "users") {
 
 object UserTable {
   val query = TableQuery[UserTable]
-  val idsQuery = query returning query
+  val returnQuery = query returning query
 
-  def byId(id: User.Id): Query[UserTable, User, Seq] = query.filter(_.id === id)
-  def findById(id: User.Id): SqlAction[Option[User], NoStream, Effect.Read] = byId(id).result.headOption
+  def byId(id: User.Id) = query.filter(_.id === id)
+  def byLogin(login: String) = query.filter(_.login === login)
 }
 

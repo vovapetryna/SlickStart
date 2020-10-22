@@ -11,5 +11,7 @@ class ChatTable(tag: Tag) extends Table[Chat](tag, "chats") {
 
 object ChatTable {
   val query = TableQuery[ChatTable]
-  val idsQuery = query returning query
+  val returnQuery = query returning query
+
+  def byId(id: Chat.Id) = query.filter(_.id === id)
 }

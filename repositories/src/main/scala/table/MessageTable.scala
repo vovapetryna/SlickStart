@@ -1,6 +1,6 @@
 package table
 
-import model.{User, Message, Chat}
+import model.{Chat, Message, User}
 import profile.PostgresProfile.api._
 
 class MessageTable(tag: Tag) extends Table[Message](tag, "messages") {
@@ -9,12 +9,14 @@ class MessageTable(tag: Tag) extends Table[Message](tag, "messages") {
   def senderId = column[User.Id]("sender")
   def chatId = column[Chat.Id]("chat")
   def * = (id, senderId, chatId, content).mapTo[Message]
-  def sender = foreignKey("senderFk", senderId, UserTable.query)(_.id)
-  def chat = foreignKey("chatFk", chatId, ChatTable.query)(_.id)
+  def sender = foreignKey("MessageTableUserTableSenderId", senderId, UserTable.query)(_.id)
+  def chat = foreignKey("MessageTableChatTableChatId", chatId, ChatTable.query)(_.id)
 }
 
 object MessageTable {
   val query = TableQuery[MessageTable]
-  val idsQuery = query returning query
+  val returnQuery = query returning query
+
+  def byId(id: Message.Id) = query.filter(_.id === id)
 }
 
