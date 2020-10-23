@@ -7,7 +7,7 @@ import api.controllerImpl.{
   UserController
 }
 import com.typesafe.scalalogging.Logger
-import model.{Chat, ChatUser, User}
+import model.{Chat, ChatUser, Message, User}
 import org.slf4j.LoggerFactory
 import profile.PostgresProfile.api._
 import repository.{ChatRepo, ChatUserRepo, MessageRepo, UserRepo}
@@ -43,28 +43,44 @@ object Main extends App {
   )
   val testChats =
     Seq(Chat(Chat.Id.empty, "Global"), Chat(Chat.Id.empty, "News"))
+  val testMessages =
+    Seq("Hi buddy)", "How r u", "Thank you!)", "u r welcome", "scala the best")
 
-  val populateDb = for {
-    insertedUsersIds <- userRepo.createAll(testUsers)
-    insertedChatsIds <- chatRepo.createAll(testChats)
-  } yield (insertedUsersIds, insertedChatsIds)
+  val populateUsersChats = for {
+    insertedUsersIds <- userController.createAll(testUsers)
+    insertedChatsIds <- chatController.createAll(testChats)
+  } yield (insertedChatsIds, insertedUsersIds)
 
-  val usersChats = Await.result(populateDb, 2.seconds)
+  val chatUsersRelations = for {
+    (chats, users) <- populateUsersChats
+  } yield (for { c <- chats; u <- users } yield (c, u)).map {
+    case (chat, user) => ChatUser(chat.id, user.id)
+  }
 
-  val testChatsUsers = usersChats._1
-    .lazyZip(usersChats._2)
-    .map { case (userId, chatId) => ChatUser(chatId.id, userId.id) }
+  val messageRelations = for {
+    (chats, users) <- populateUsersChats
+  } yield (for { c <- chats; u <- users; m <- testMessages } yield (c, u, m))
+    .map {
+      case (chat, user, message) =>
+        Message(Message.Id.empty, user.id, chat.id, message)
+    }
 
-  val populateChatUser = for {
-    insertedRelations <- chatUserRepo.createAll(testChatsUsers)
+  val populateChatUserRelation = for {
+    chatUser <- chatUsersRelations
+    insertedRelations <- chatUserController.createAll(chatUser)
   } yield insertedRelations
 
-  val chatUserRelation = Await.result(populateChatUser, 2.seconds)
+  val populateMessages = for {
+    messages <- messageRelations
+    insertedMessage <- messageController.createAll(messages)
+  } yield insertedMessage
 
   val getUsersChats = for {
+    chatUserRelation <- populateChatUserRelation
     chatsBUser <- chatUserRepo.chatsByUser(chatUserRelation.head.userId)
     usersBChat <- chatUserRepo.usersByChat(chatUserRelation.head.chatId)
   } yield (chatsBUser, usersBChat)
 
   println(Await.result(getUsersChats, 2.seconds))
+  println(Await.result(populateMessages, 2.seconds))
 }
