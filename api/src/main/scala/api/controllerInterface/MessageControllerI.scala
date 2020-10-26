@@ -1,6 +1,6 @@
 package api.controllerInterface
 
-import model.Message
+import model.{Chat, Message}
 
 import scala.concurrent.Future
 
@@ -14,4 +14,8 @@ trait MessageControllerI {
   def getAll: Future[Seq[Message]]
 
   def delete(id: Message.Id): Future[Int]
+
+  def getAllByChat(id: Chat.Id): Future[Seq[Message]]
+
+  def editById(id: Message.Id, content: String): Future[Int]
 }

@@ -1,10 +1,13 @@
 package model
 
+import java.time.LocalDateTime
+
 case class Message(
     id: Message.Id,
     senderId: User.Id,
     chatId: Chat.Id,
-    content: String
+    content: String,
+    timeSent: LocalDateTime
 )
 
 object Message {
@@ -16,3 +19,4 @@ object Message {
 
   val tupled = (this.apply _).tupled
 }
+

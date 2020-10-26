@@ -1,8 +1,8 @@
 package repository
 
-import model.Message
-import table.MessageTable
+import model.{Chat, Message}
 import profile.PostgresProfile.api._
+import table.MessageTable
 
 class MessageRepo(db: Database) {
   def init = db.run(MessageTable.query.schema.create)
@@ -29,4 +29,8 @@ class MessageRepo(db: Database) {
         sender <- message.sender
       } yield (message, chat, sender)).result
     }
+
+  def getAllByChat(id: Chat.Id) = db.run(MessageTable.byChat(id).result)
+
+  def edit(message: Message) = db.run(MessageTable.byId(message.id).update(message))
 }
