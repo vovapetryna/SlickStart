@@ -1,6 +1,8 @@
 package model
 
-case class Chat(id: Chat.Id, name: String)
+case class Chat(id: Chat.Id, name: String) {
+  override def toString: String = s"\n - Chat name : ${this.name}\n - Chat id : ${this.id}"
+}
 
 object Chat {
   case class Id(value: Long) extends AnyVal

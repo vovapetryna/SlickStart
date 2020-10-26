@@ -3,7 +3,6 @@ package api
 import java.time.LocalDateTime
 
 import api.controllerImpl.{ChatController, ChatUserController, MessageController, UserController}
-import api.implicits.Printing._
 import com.typesafe.scalalogging.Logger
 import model.{Chat, ChatUser, Message, User}
 import org.slf4j.LoggerFactory
@@ -30,9 +29,9 @@ object Main extends App {
   lazy val messageController = new MessageController(messageRepo)
   lazy val chatUserController = new ChatUserController(chatUserRepo)
 
-  def execAndPrint[T](action: Future[T])(implicit toStringConverter: T => String): T = {
+  def execAndPrint[T](action: Future[T]): T = {
     val retValue = Await.result(action, 2.seconds)
-    logger.info("\n" + toStringConverter(retValue) + "\n\n")
+    logger.info("\n" + retValue.toString + "\n\n")
     retValue
   }
 
