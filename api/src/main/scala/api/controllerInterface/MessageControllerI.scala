@@ -1,6 +1,6 @@
 package api.controllerInterface
 
-import model.{Chat, Message}
+import model.{Chat, Message, User}
 
 import scala.concurrent.Future
 

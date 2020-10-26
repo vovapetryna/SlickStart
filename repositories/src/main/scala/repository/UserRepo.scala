@@ -24,4 +24,6 @@ class UserRepo(db: Database) {
   def getAll = db.run(UserTable.query.result)
 
   def delete(id: User.Id) = db.run(UserTable.byId(id).delete)
+
+  def getLikeLogin(login: String) = db.run(UserTable.likeLogin(login).result)
 }

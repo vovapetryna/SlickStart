@@ -4,7 +4,9 @@ import model.{Chat, Message}
 import profile.PostgresProfile.api._
 import table.MessageTable
 
-class MessageRepo(db: Database) {
+import scala.concurrent.ExecutionContext
+
+class MessageRepo(db: Database)(implicit ec: ExecutionContext) {
   def init = db.run(MessageTable.query.schema.create)
 
   def create(message: Message) = db.run(MessageTable.returnQuery += message)

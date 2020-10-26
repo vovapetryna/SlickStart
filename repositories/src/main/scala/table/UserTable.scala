@@ -15,5 +15,6 @@ object UserTable {
 
   def byId(id: User.Id) = query.filter(_.id === id)
   def byLogin(login: String) = query.filter(_.login === login)
+  def likeLogin(login: String) = query.withFilter(_.login like s"%$login%")
 }
 

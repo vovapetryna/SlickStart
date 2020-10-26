@@ -5,6 +5,8 @@ import java.time.LocalDateTime
 import model.{Chat, Message, User}
 import profile.PostgresProfile.api._
 
+import scala.concurrent.ExecutionContext
+
 class MessageTable(tag: Tag) extends Table[Message](tag, "messages") {
   def id = column[Message.Id]("id", O.PrimaryKey, O.AutoInc)
   def timeSent = column[LocalDateTime]("timeSent")

@@ -1,14 +1,20 @@
 package api.controllerImpl
 
-import api.controllerInterface.MessageControllerI
-import model.{Chat, Message}
+import api.controllerInterface.{ChatUserControllerI, MessageControllerI}
+import model.{Chat, Message, User}
 import repository.MessageRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MessageController(repo: MessageRepo)(implicit ec: ExecutionContext)
+class MessageController(
+    repo: MessageRepo,
+    chatUserController: ChatUserControllerI
+)(implicit ec: ExecutionContext)
     extends MessageControllerI {
-  def create(message: Message): Future[Message] = repo.create(message)
+  def create(message: Message): Future[Message] = for {
+    chats <- chatUserController.chatsByUser(message.senderId)
+    sent <- repo.create(message) if chats.map(_.id).contains(message.chatId)
+  } yield sent
 
   def createAll(messages: Seq[Message]): Future[Seq[Message]] =
     repo.createAll(messages)

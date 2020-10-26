@@ -1,13 +1,17 @@
 package api.controllerImpl
 
-import api.controllerInterface.{ChatControllerI, ChatUserControllerI}
-import model.{Chat, User}
+import api.controllerInterface.{ChatControllerI, ChatUserControllerI, UserControllerI}
+import model.{Chat, ChatUser, User}
 import repository.ChatRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChatController(repo: ChatRepo, chatUserController: ChatUserControllerI)(
-    implicit ec: ExecutionContext
+class ChatController(
+    repo: ChatRepo,
+    chatUserController: ChatUserControllerI,
+    userController: UserControllerI
+)(implicit
+    ec: ExecutionContext
 ) extends ChatControllerI {
   def create(chat: Chat): Future[Chat] = repo.create(chat)
 
@@ -22,4 +26,11 @@ class ChatController(repo: ChatRepo, chatUserController: ChatUserControllerI)(
 
   def deleteUser(chatId: Chat.Id, userId: User.Id): Future[Int] =
     chatUserController.delete(chatId, userId)
+
+  def createDirectChat(left: User.Id, right: User.Id) = for {
+    lUser <- userController.getById(left)
+    rUser <- userController.getById(right)
+    nChat <- create(Chat(Chat.Id.empty, lUser.login + rUser.login))
+    _ <- chatUserController.createAll(Seq(ChatUser(nChat.id, lUser.id), ChatUser(nChat.id, rUser.id)))
+  } yield nChat
 }

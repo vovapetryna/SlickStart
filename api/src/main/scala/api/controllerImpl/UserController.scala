@@ -22,9 +22,11 @@ class UserController(repo: UserRepo, chatUserController: ChatUserControllerI)(
 
   def delete(id: User.Id): Future[Int] = repo.delete(id)
 
-  def addChat(userId: User.Id, chatId: Chat.Id): Future[ChatUser] =
+  def joinChat(userId: User.Id, chatId: Chat.Id): Future[ChatUser] =
     chatUserController.create(ChatUser(chatId, userId))
 
   def leaveChat(chatId: Chat.Id, userId: User.Id): Future[Int] =
     chatUserController.delete(chatId, userId)
+
+  def searchByLogin(login: String): Future[Seq[User]] = repo.getLikeLogin(login)
 }

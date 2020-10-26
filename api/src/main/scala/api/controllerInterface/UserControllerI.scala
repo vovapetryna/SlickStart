@@ -15,7 +15,9 @@ trait UserControllerI {
 
   def delete(id: User.Id): Future[Int]
 
-  def addChat(userId: User.Id, chatId: Chat.Id): Future[ChatUser]
+  def joinChat(userId: User.Id, chatId: Chat.Id): Future[ChatUser]
 
   def leaveChat(chatId: Chat.Id, userId: User.Id): Future[Int]
+
+  def searchByLogin(login: String): Future[Seq[User]]
 }
