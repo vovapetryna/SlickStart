@@ -1,12 +1,12 @@
 package api.controllerImpl
 
-import api.controllerInterface.UserControllerI
+import api.controllerInterface.{ChatUserControllerI, UserControllerI}
 import model.{Chat, ChatUser, User}
 import repository.UserRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserController(repo: UserRepo, chatUserController: ChatUserController)(
+class UserController(repo: UserRepo, chatUserController: ChatUserControllerI)(
     implicit ec: ExecutionContext
 ) extends UserControllerI {
 
