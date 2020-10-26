@@ -23,4 +23,6 @@ class MessageController(repo: MessageRepo)(implicit ec: ExecutionContext)
 
   def editById(id: Message.Id, content: String): Future[Int] =
     getById(id).flatMap(message => repo.edit(message.copy(content = content)))
+
+  def search(substring: String): Future[Seq[Message]] = repo.search(substring)
 }

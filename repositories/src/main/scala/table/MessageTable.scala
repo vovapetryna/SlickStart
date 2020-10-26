@@ -12,8 +12,10 @@ class MessageTable(tag: Tag) extends Table[Message](tag, "messages") {
   def senderId = column[User.Id]("sender")
   def chatId = column[Chat.Id]("chat")
   def * = (id, senderId, chatId, content, timeSent).mapTo[Message]
-  def sender = foreignKey("MessageTableUserTableSenderId", senderId, UserTable.query)(_.id)
-  def chat = foreignKey("MessageTableChatTableChatId", chatId, ChatTable.query)(_.id)
+  def sender =
+    foreignKey("MessageTableUserTableSenderId", senderId, UserTable.query)(_.id)
+  def chat =
+    foreignKey("MessageTableChatTableChatId", chatId, ChatTable.query)(_.id)
 }
 
 object MessageTable {
@@ -22,5 +24,7 @@ object MessageTable {
 
   def byId(id: Message.Id) = query.filter(_.id === id)
   def byChat(id: Chat.Id) = query.filter(_.chatId === id)
-}
 
+  def likeContent(substring: String) =
+    query.withFilter(m => m.content like s"%$substring%")
+}

@@ -2,12 +2,7 @@ package api
 
 import java.time.LocalDateTime
 
-import api.controllerImpl.{
-  ChatController,
-  ChatUserController,
-  MessageController,
-  UserController
-}
+import api.controllerImpl.{ChatController, ChatUserController, MessageController, UserController}
 import api.implicits.Printing._
 import com.typesafe.scalalogging.Logger
 import model.{Chat, ChatUser, Message, User}
@@ -57,7 +52,7 @@ object Main extends App {
   val testChats =
     Seq(Chat(Chat.Id.empty, "Global"), Chat(Chat.Id.empty, "News"))
   val testMessages =
-    Seq("Hi buddy)", "How r u", "scala the best")
+    Seq("Hi buddy)", "How r u buddy", "scala the best")
 
   val users = execAndPrint(userController.createAll(testUsers))
   val chats = execAndPrint(chatController.createAll(testChats))
@@ -75,7 +70,6 @@ object Main extends App {
   } yield Message(Message.Id.empty, u.id, c.id, m, LocalDateTime.now())
   val messages = execAndPrint(messageController.createAll(messageCombinations))
 
-
   exec(userController.leaveChat(chats.head.id, users.head.id))
   execAndPrint(chatUserController.chatsByUser(users.head.id))
   execAndPrint(chatUserController.usersByChat(chats.head.id))
@@ -84,4 +78,6 @@ object Main extends App {
 
   exec(messageController.editById(messages.head.id, "Editing message text is really simple!"))
   execAndPrint(messageController.getById(messages.head.id))
+
+  execAndPrint(messageController.search("buddy"))
 }

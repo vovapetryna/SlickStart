@@ -18,4 +18,6 @@ trait MessageControllerI {
   def getAllByChat(id: Chat.Id): Future[Seq[Message]]
 
   def editById(id: Message.Id, content: String): Future[Int]
+
+  def search(substring: String): Future[Seq[Message]]
 }

@@ -9,7 +9,8 @@ class MessageRepo(db: Database) {
 
   def create(message: Message) = db.run(MessageTable.returnQuery += message)
 
-  def createAll(messages: Seq[Message]) = db.run(MessageTable.returnQuery ++= messages)
+  def createAll(messages: Seq[Message]) =
+    db.run(MessageTable.returnQuery ++= messages)
 
   def update(message: Message) =
     db.run(MessageTable.byId(message.id).update(message))
@@ -32,5 +33,9 @@ class MessageRepo(db: Database) {
 
   def getAllByChat(id: Chat.Id) = db.run(MessageTable.byChat(id).result)
 
-  def edit(message: Message) = db.run(MessageTable.byId(message.id).update(message))
+  def edit(message: Message) =
+    db.run(MessageTable.byId(message.id).update(message))
+
+  def search(substring: String) =
+    db.run(MessageTable.likeContent(substring).result)
 }
