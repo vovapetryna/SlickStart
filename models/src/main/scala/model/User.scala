@@ -11,5 +11,5 @@ object User {
     val empty: Id = Id(-1L)
   }
 
-  val tupled = (this.apply _).tupled
+  val tupled: ((Id, String)) => User = (this.apply _).tupled
 }

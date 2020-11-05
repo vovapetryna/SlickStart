@@ -5,7 +5,7 @@ import profile.PostgresProfile.api._
 
 class ChatTable(tag: Tag) extends Table[Chat](tag, "chats") {
   def id = column[Chat.Id]("id", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("name")
+  def name = column[String]("name", O.Unique)
   def * = (id, name).mapTo[Chat]
 }
 

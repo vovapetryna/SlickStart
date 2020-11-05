@@ -30,7 +30,7 @@ object Main extends App {
   val chatUserRepo = new ChatUserRepo(db)
 
   lazy val userController = new UserController(userRepo, chatUserController)
-  lazy val chatController = new ChatController(chatRepo, chatUserController, userController)
+  lazy val chatController = new ChatController(chatRepo, chatUserController)
   lazy val messageController = new MessageController(messageRepo, chatUserController)
   lazy val chatUserController = new ChatUserController(chatUserRepo)
 
@@ -93,7 +93,7 @@ object Main extends App {
   )
   execAndPrint(messageController.getById(messages.head.id))
 
-  logger.info("Try to wire to unauthorized chat")
+  logger.info("Try to write to unauthorized chat")
   execAndPrint(
     messageController.create(
       Message(Message.Id.empty, users.head.id, chats.head.id, "Test message to wrong chat", LocalDateTime.now())
@@ -107,11 +107,6 @@ object Main extends App {
     )
   )
   execAndPrint(messageController.getAllByChat(chats.head.id))
-
-  logger.info("Create direct chat between users")
-  val direct = execAndPrint(chatController.createDirectChat(users.head.id, users(1).id))
-  execAndPrint(chatController.getAll)
-  execAndPrint(chatUserController.usersByChat(direct.id))
 
   logger.info("Search all users with substring in login")
   execAndPrint(userController.searchByLogin("Bar"))
