@@ -25,7 +25,7 @@ class ChatActor(
     context: ActorContext[ChatActor.Command],
     chat: model.Chat,
     messageRepo: MessageRepo
-)(implicit val ec: ExecutionContext)
+)(implicit ec: ExecutionContext)
     extends AbstractBehavior[ChatActor.Command](context) {
   import ChatActor._
 

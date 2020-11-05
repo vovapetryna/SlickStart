@@ -2,7 +2,9 @@ package api
 
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.{ActorRef, ActorSystem}
+import akka.http.javadsl.model.StatusCodes
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
@@ -40,8 +42,12 @@ object ApiMain extends App with marshaling.ModelsMarshaling {
   val route: Route =
     concat(
       get {
-        pathPrefix("user" / LongNumber) { id =>
-          complete(model.User(model.User.Id(id), "test name"))
+        pathPrefix("chat" / LongNumber) { id =>
+          implicit val timeout: Timeout = 5.seconds
+          val chat = system ? (replyId => ChatManager.GetChat(model.Chat.Id(id), replyId))
+          onSuccess(chat) {
+            case ChatManager.ResponseChat(chat) => complete(chat)
+          }
         }
       },
       post {
@@ -49,9 +55,8 @@ object ApiMain extends App with marshaling.ModelsMarshaling {
           parameter("name".as[String]) {
             name =>
               implicit val timeout: Timeout = 5.seconds
-              println("post processing start")
-              val chatIdChatRef = system ? (requestId =>
-                ChatManager.CreateChat(model.Chat(model.Chat.Id.empty, name), requestId))
+              val chatIdChatRef = system ? (replyId =>
+                ChatManager.CreateChat(model.Chat(model.Chat.Id.empty, name), replyId))
               complete("Chat added to pool")
           }
         }
